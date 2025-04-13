@@ -48,7 +48,7 @@ class UserServiceTest {
         existingUser = new User();
         existingUser.setUsername("testUser");
         existingUser.setPassword("encoded_password123");
-        existingUser.setRole("ROLE_USER");
+        existingUser.setRole("USER");
     }
 
     /**
@@ -59,7 +59,7 @@ class UserServiceTest {
     void testRegisterUserWithRoleUser() {
         String username = "testUser";
         String password = "password123";
-        String role = "ROLE_USER";
+        String role = "USER";
 
         savedUser.setUsername(username);
         savedUser.setPassword("encoded_password123");
@@ -85,7 +85,7 @@ class UserServiceTest {
     void testRegisterUserWithRoleAdmin() {
         String username = "adminUser";
         String password = "admin123";
-        String role = "ROLE_ADMIN";
+        String role = "ADMIN";
 
         savedUser.setUsername(username);
         savedUser.setPassword("encoded_admin123");
@@ -111,7 +111,7 @@ class UserServiceTest {
     void testRegisterUserWithExistingUsername() {
         String username = "testUser";
         String password = "password123";
-        String role = "ROLE_USER";
+        String role = "USER";
 
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(existingUser));
 
@@ -128,7 +128,7 @@ class UserServiceTest {
     void testRegisterUserWithGuestUsername() {
         String username = "guest";
         String password = "password123";
-        String role = "ROLE_USER";
+        String role = "USER";
 
         when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
 
@@ -145,7 +145,7 @@ class UserServiceTest {
     void testRegisterUserWithNullUsername() {
         String username = null;
         String password = "password123";
-        String role = "ROLE_USER";
+        String role = "USER";
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
             userService.registerUser(username, password, role));
@@ -160,7 +160,7 @@ class UserServiceTest {
     void testRegisterUserWithEmptyUsername() {
         String username = "";
         String password = "password123";
-        String role = "ROLE_USER";
+        String role = "USER";
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
             userService.registerUser(username, password, role));
@@ -175,7 +175,7 @@ class UserServiceTest {
     void testRegisterUserWithNullPassword() {
         String username = "testUser";
         String password = null;
-        String role = "ROLE_USER";
+        String role = "USER";
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
             userService.registerUser(username, password, role));
@@ -190,7 +190,7 @@ class UserServiceTest {
     void testRegisterUserWithEmptyPassword() {
         String username = "testUser";
         String password = "";
-        String role = "ROLE_USER";
+        String role = "USER";
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
             userService.registerUser(username, password, role));
