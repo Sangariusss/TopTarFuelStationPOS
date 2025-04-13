@@ -1,0 +1,46 @@
+# Compiled files and build artifacts
+/target/
+/build/
+*.class
+*.jar
+*.war
+*.nar
+*.ear
+
+# Log files
+*.log
+
+# Sensitive configuration files
+application-local.yml
+application-*.yml
+
+# Database files
+*.db
+*.sql
+
+# Temporary files and cache
+*.swp
+*~
+
+# IDE-specific files
+.idea/
+*.iml
+.vscode/
+*.sublime-project
+*.sublime-workspace
+/.classpath
+/.project
+/.settings/
+*.cache
+
+# Maven-specific files
+.mvn/
+mvnw
+mvnw.cmd
+
+# System-specific files
+.DS_Store
+Thumbs.db
+
+# Spring Boot DevTools
+.spring-boot-devtools.properties

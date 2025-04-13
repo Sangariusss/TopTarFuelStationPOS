@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Адмін-панель - Дашборд - TopTar Fuel Station</title>
+  <link rel="stylesheet" th:href="@{/css/tailwind.min.css}">
+  <link rel="stylesheet" th:href="@{/css/all.min.css}">
+  <link rel="stylesheet" th:href="@{/css/animate.min.css}">
+</head>
+<body class="min-h-screen flex flex-col" style="background-color: #141414;">
+<div th:insert="~{fragments :: header}"></div>
+
+<main class="flex-grow max-w-7xl mx-auto px-4 py-12 flex">
+  <aside class="w-64 rounded-2xl shadow-xl p-6 mr-6 animate__animated animate__fadeIn" style="background-color: #1A1A1A;">
+    <div class="flex items-center mb-6">
+      <i class="fas fa-tachometer-alt text-2xl mr-3" style="color: #ED5909;"></i>
+      <h2 class="text-xl font-bold" style="color: #FFFFFF;">Адмін-панель</h2>
+    </div>
+    <nav class="space-y-2">
+      <a href="/admin/dashboard" class="block px-4 py-3 rounded-md transition duration-200 flex items-center space-x-2" style="background-color: #ED5909; color: #FFFFFF;">
+        <i class="fas fa-home" style="color: #FFFFFF;"></i>
+        <span>Дашборд</span>
+      </a>
+      <a href="/admin/transactions" class="block px-4 py-3 rounded-md transition duration-200 flex items-center space-x-2" style="background-color: #262626; color: #FFFFFF;">
+        <i class="fas fa-list" style="color: #ED5909;"></i>
+        <span>Транзакції</span>
+      </a>
+      <a href="/admin/analytics" class="block px-4 py-3 rounded-md transition duration-200 flex items-center space-x-2" style="background-color: #262626; color: #FFFFFF;">
+        <i class="fas fa-chart-bar" style="color: #ED5909;"></i>
+        <span>Аналітика</span>
+      </a>
+    </nav>
+  </aside>
+
+  <div class="flex-1 rounded-2xl shadow-xl p-8 animate__animated animate__fadeIn" style="background-color: #1A1A1A;">
+    <div class="flex items-center justify-center mb-8">
+      <i class="fas fa-tachometer-alt text-4xl mr-3" style="color: #ED5909;"></i>
+      <h1 class="text-3xl font-bold" style="color: #FFFFFF;">Дашборд</h1>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div class="p-6 rounded-xl shadow-md flex items-center space-x-4 animate__animated animate__fadeIn stats-card" style="background-color: #262626;">
+        <i class="fas fa-exchange-alt text-3xl" style="color: #ED5909;"></i>
+        <div>
+          <h2 class="text-lg font-semibold" style="color: #D1D5DB;">Кількість транзакцій</h2>
+          <p class="text-2xl font-bold" th:text="${totalTransactions}" style="color: #ED5909;"></p>
+        </div>
+      </div>
+      <div class="p-6 rounded-xl shadow-md flex items-center space-x-4 animate__animated animate__fadeIn stats-card" style="background-color: #262626;">
+        <i class="fas fa-money-bill-wave text-3xl" style="color: #ED5909;"></i>
+        <div>
+          <h2 class="text-lg font-semibold" style="color: #D1D5DB;">Загальний дохід (грн)</h2>
+          <p class="text-2xl font-bold" th:text="${totalRevenue}" style="color: #ED5909;"></p>
+        </div>
+      </div>
+      <div class="p-6 rounded-xl shadow-md flex items-center space-x-4 animate__animated animate__fadeIn stats-card" style="background-color: #262626;">
+        <i class="fas fa-receipt text-3xl" style="color: #ED5909;"></i>
+        <div>
+          <h2 class="text-lg font-semibold" style="color: #D1D5DB;">Середній чек (грн)</h2>
+          <p class="text-2xl font-bold" th:text="${averageTransaction}" style="color: #ED5909;"></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8">
+      <h2 class="text-xl font-semibold mb-4 flex items-center" style="color: #D1D5DB;">
+        <i class="fas fa-history mr-2" style="color: #ED5909;"></i>
+        Останні транзакції
+      </h2>
+      <div class="overflow-x-auto rounded-xl shadow-inner" style="background-color: #262626;">
+        <table class="min-w-full">
+          <thead>
+          <tr>
+            <th class="px-6 py-4 text-left text-sm font-medium" style="color: #D1D5DB;">ID</th>
+            <th class="px-6 py-4 text-left text-sm font-medium" style="color: #D1D5DB;">Тип пального</th>
+            <th class="px-6 py-4 text-left text-sm font-medium" style="color: #D1D5DB;">Ціна за літр (грн)</th>
+            <th class="px-6 py-4 text-left text-sm font-medium" style="color: #D1D5DB;">Об’єм (л)</th>
+            <th class="px-6 py-4 text-left text-sm font-medium" style="color: #D1D5DB;">Сума (грн)</th>
+            <th class="px-6 py-4 text-left text-sm font-medium" style="color: #D1D5DB;">Дата</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="transaction : ${recentTransactions}" class="transaction-row">
+            <td class="px-6 py-4 text-sm" th:text="${transaction.id}" style="color: #9CA3AF;"></td>
+            <td class="px-6 py-4 text-sm" th:text="${transaction.fuelTypeName}" style="color: #9CA3AF;"></td>
+            <td class="px-6 py-4 text-sm" th:text="${transaction.pricePerLiter}" style="color: #9CA3AF;"></td>
+            <td class="px-6 py-4 text-sm" th:text="${transaction.volume}" style="color: #9CA3AF;"></td>
+            <td class="px-6 py-4 text-sm font-medium" th:text="${transaction.totalAmount}" style="color: #ED5909;"></td>
+            <td class="px-6 py-4 text-sm" th:text="${#temporals.format(transaction.transactionDate, 'dd-MM-yyyy HH:mm')}" style="color: #9CA3AF;"></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <a href="/admin/transactions" class="inline-block mt-4 flex items-center space-x-2 view-all-link" style="color: #ED5909;">
+        <i class="fas fa-arrow-right"></i>
+        <span>Переглянути всі транзакції</span>
+      </a>
+    </div>
+  </div>
+</main>
+
+<div th:insert="~{fragments :: footer}"></div>
+<script th:src="@{/js/admin-dashboard.js}"></script>
+</body>
+</html>

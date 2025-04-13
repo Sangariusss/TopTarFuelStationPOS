@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+  <link rel="stylesheet" th:href="@{/css/tailwind.min.css}">
+  <link rel="stylesheet" th:href="@{/css/all.min.css}">
+  <link rel="stylesheet" th:href="@{/css/animate.min.css}">
+</head>
+<body>
+<th:block th:fragment="header">
+  <header class="text-white shadow-xl" style="background-color: #1A1A1A;">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+      <a href="/" class="flex items-center">
+        <img th:src="@{/images/toptar-logo.png}" alt="TopTar Logo" class="h-8 w-auto" src="/images/toptar-logo.png"/>
+      </a>
+      <nav class="flex items-center space-x-6">
+        <a th:if="${#authorization.expression('isAuthenticated()')}" href="/pos" class="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-black hover:bg-opacity-20 transition duration-200">
+          <i class="fas fa-cash-register" style="color: #ED5909;"></i>
+          <span>Каса</span>
+        </a>
+        <a th:if="${#authorization.expression('hasRole(''ADMIN'')')}" href="/admin/dashboard" class="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-black hover:bg-opacity-20 transition duration-200">
+          <i class="fas fa-tachometer-alt" style="color: #ED5909;"></i>
+          <span class="truncate">Адмін-панель</span>
+        </a>
+        <a th:if="${#authorization.expression('hasRole(''USER'')')}" href="/user/transactions" class="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-black hover:bg-opacity-20 transition duration-200">
+          <i class="fas fa-list" style="color: #ED5909;"></i>
+          <span class="truncate">Мої транзакції</span>
+        </a>
+        <div th:if="${#authorization.expression('isAuthenticated()')}" class="relative dropdown">
+          <button class="dropdown-toggle flex items-center space-x-2 px-3 py-2 rounded-md focus:outline-none text-white hover:bg-black hover:bg-opacity-20 transition duration-200">
+            <i class="fas fa-user" style="color: #ED5909;"></i>
+            <span th:text="${#authentication.name}">Користувач</span>
+            <i class="fas fa-chevron-down" style="color: #ED5909;"></i>
+          </button>
+          <div class="dropdown-menu hidden absolute right-0 mt-2 w-48 rounded-md shadow-lg z-10 animate__animated animate__fadeIn" style="background-color: #1A1A1A;">
+            <form th:action="@{/logout}" method="post">
+              <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+              <button type="submit" class="block w-full text-left px-4 py-3 text-gray-300 transition duration-200 flex items-center space-x-2 hover:bg-black hover:bg-opacity-20 rounded-md">
+                <i class="fas fa-sign-out-alt" style="color: #ED5909;"></i>
+                <span>Вийти</span>
+              </button>
+            </form>
+          </div>
+        </div>
+        <a th:unless="${#authorization.expression('isAuthenticated()')}" href="/login" class="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-black hover:bg-opacity-20 transition duration-200">
+          <i class="fas fa-sign-in-alt" style="color: #ED5909;"></i>
+          <span>Вхід</span>
+        </a>
+        <a th:unless="${#authorization.expression('isAuthenticated()')}" href="/register" class="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-black hover:bg-opacity-20 transition duration-200">
+          <i class="fas fa-user-plus" style="color: #ED5909;"></i>
+          <span>Реєстрація</span>
+        </a>
+      </nav>
+    </div>
+  </header>
+  <script th:src="@{/js/fragments.js}" defer></script>
+</th:block>
+
+<th:block th:fragment="footer">
+  <footer class="text-white py-4" style="background-color: #1A1A1A;">
+    <div class="max-w-7xl mx-auto px-4 text-center">
+      <p>© 2025 TopTar. Усі права захищені.</p>
+    </div>
+  </footer>
+</th:block>
+</body>
+</html>

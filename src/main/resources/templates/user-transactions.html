@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Мої транзакції - TopTar Fuel Station</title>
+  <link rel="stylesheet" th:href="@{/css/tailwind.min.css}">
+  <link rel="stylesheet" th:href="@{/css/all.min.css}">
+  <link rel="stylesheet" th:href="@{/css/animate.min.css}">
+  <style>
+    input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+      background-color: #ED5909;
+      border-radius: 50%;
+      padding: 5px;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col" style="background-color: #141414;">
+<div th:replace="~{fragments :: header}"></div>
+
+<main class="flex-grow max-w-7xl mx-auto px-4 py-12">
+  <div class="rounded-2xl shadow-xl p-8 animate__animated animate__fadeIn" style="background-color: #1A1A1A;">
+    <div class="flex items-center justify-center mb-8">
+      <i class="fas fa-list text-4xl mr-3" style="color: #ED5909;"></i>
+      <h1 class="text-3xl font-bold text-white">Мої транзакції</h1>
+    </div>
+
+    <form th:action="@{/user/transactions}" method="get" class="mb-8 flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
+      <div class="relative flex-1">
+        <label for="fuelTypeName" class="block text-sm font-medium mb-2" style="color: #D1D5DB;">Тип пального:</label>
+        <div class="relative">
+          <span class="absolute inset-y-0 left-0 flex items-center pl-4">
+            <i class="fas fa-gas-pump" style="color: #ED5909;"></i>
+          </span>
+          <select id="fuelTypeName" name="fuelTypeName" class="pl-12 pr-4 w-full rounded-md py-3 shadow-sm transition duration-200 cursor-pointer" style="background-color: #1A1A1A; border: 1px solid #262626; outline: none; color: #FFFFFF; appearance: none; padding-right: 2rem;">
+            <option value="" th:selected="${fuelTypeName == null}" style="color: #9CA3AF;">Усі типи</option>
+            <option th:each="fuelType : ${fuelTypes}" th:value="${fuelType.name}" th:text="${fuelType.name}" th:selected="${fuelTypeName == fuelType.name}" style="color: #FFFFFF;"></option>
+          </select>
+          <span class="absolute right-4 top-1/2 transform -translate-y-1/2 text-white">
+            <i class="fas fa-chevron-down"></i>
+          </span>
+        </div>
+      </div>
+      <div class="relative flex-1">
+        <label for="startDate" class="block text-sm font-medium mb-2" style="color: #D1D5DB;">Дата (з):</label>
+        <div class="relative">
+          <input type="datetime-local" id="startDate" name="startDate" th:value="${startDate}" class="pl-4 w-full rounded-md px-4 py-3 shadow-sm transition duration-200 cursor-pointer" style="background-color: #1A1A1A; border: 1px solid #262626; outline: none; color: #FFFFFF;" />
+        </div>
+      </div>
+      <div class="flex items-end">
+        <button id="filterBtn" type="submit" class="px-4 py-3 rounded-md transition duration-200 flex items-center space-x-2" style="background-color: #ED5909; color: #FFFFFF;">
+          <i class="fas fa-filter"></i>
+          <span>Фільтрувати</span>
+        </button>
+      </div>
+    </form>
+
+    <div class="overflow-x-auto rounded-xl shadow-inner" style="background-color: #262626;">
+      <table class="min-w-full" id="transactionsTable">
+        <thead>
+        <tr>
+          <th class="px-6 py-4 text-left text-sm font-medium" style="color: #D1D5DB;">№</th>
+          <th class="px-6 py-4 text-left text-sm font-medium" style="color: #D1D5DB;">Тип пального</th>
+          <th class="px-6 py-4 text-left text-sm font-medium" style="color: #D1D5DB;">Ціна за літр (грн)</th>
+          <th class="px-6 py-4 text-left text-sm font-medium" style="color: #D1D5DB;">Об’єм (л)</th>
+          <th class="px-6 py-4 text-left text-sm font-medium" style="color: #D1D5DB;">Сума (грн)</th>
+          <th class="px-6 py-4 text-left text-sm font-medium" style="color: #D1D5DB;">Дата</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:unless="${#lists.isEmpty(transactions)}" th:each="transaction, iterStat : ${transactions}" class="transaction-row">
+          <td class="px-6 py-4 text-sm" th:text="${iterStat.count + (currentPage * 10)}" style="color: #9CA3AF;"></td>
+          <td class="px-6 py-4 text-sm" th:text="${transaction.fuelTypeName}" style="color: #9CA3AF;"></td>
+          <td class="px-6 py-4 text-sm" th:text="${transaction.pricePerLiter}" style="color: #9CA3AF;"></td>
+          <td class="px-6 py-4 text-sm" th:text="${transaction.volume}" style="color: #9CA3AF;"></td>
+          <td class="px-6 py-4 text-sm font-medium" th:text="${transaction.totalAmount}" style="color: #ED5909;"></td>
+          <td class="px-6 py-4 text-sm" th:text="${#temporals.format(transaction.transactionDate, 'dd-MM-yyyy HH:mm')}" style="color: #9CA3AF;"></td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(transactions)}" class="text-center">
+          <td colspan="6" class="px-6 py-4 text-sm" style="color: #9CA3AF;">У вас поки немає транзакцій</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div th:if="${totalPages > 0}" class="mt-8 flex justify-between items-center">
+      <input type="hidden" id="currentPage" th:value="${currentPage}">
+      <button id="prevBtn" th:disabled="!${hasPrevious}" class="px-4 py-2 rounded-md transition duration-200 flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed" style="background-color: #ED5909; color: #FFFFFF;">
+        <i class="fas fa-chevron-left"></i>
+        <span>Попередня</span>
+      </button>
+      <span style="color: #D1D5DB;">Сторінка <span th:text="${currentPage + 1}"></span> з <span th:text="${totalPages > 0 ? totalPages : 1}"></span></span>
+      <button id="nextBtn" th:disabled="!${hasNext}" class="px-4 py-2 rounded-md transition duration-200 flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed" style="background-color: #ED5909; color: #FFFFFF;">
+        <span>Наступна</span>
+        <i class="fas fa-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+</main>
+
+<div th:insert="~{fragments :: footer}"></div>
+<script th:src="@{/js/user-transactions.js}"></script>
+</body>
+</html>

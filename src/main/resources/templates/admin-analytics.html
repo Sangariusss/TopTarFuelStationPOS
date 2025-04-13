@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Адмін-панель - Аналітика</title>
+  <link rel="stylesheet" th:href="@{/css/tailwind.min.css}">
+  <link rel="stylesheet" th:href="@{/css/all.min.css}">
+  <link rel="stylesheet" th:href="@{/css/animate.min.css}">
+</head>
+<body class="min-h-screen flex flex-col" style="background-color: #141414;">
+<div th:insert="~{fragments :: header}"></div>
+
+<main class="flex-grow max-w-7xl mx-auto px-4 py-12 flex">
+  <aside class="w-64 rounded-2xl shadow-xl p-6 mr-6 animate__animated animate__fadeIn" style="background-color: #1A1A1A;">
+    <div class="flex items-center mb-6">
+      <i class="fas fa-tachometer-alt text-2xl mr-3" style="color: #ED5909;"></i>
+      <h2 class="text-xl font-bold" style="color: #FFFFFF;">Адмін-панель</h2>
+    </div>
+    <nav class="space-y-2">
+      <a href="/admin/dashboard" class="block px-4 py-3 rounded-md transition duration-200 flex items-center space-x-2" style="background-color: #262626; color: #FFFFFF;">
+        <i class="fas fa-home" style="color: #ED5909;"></i>
+        <span>Дашборд</span>
+      </a>
+      <a href="/admin/transactions" class="block px-4 py-3 rounded-md transition duration-200 flex items-center space-x-2" style="background-color: #262626; color: #FFFFFF;">
+        <i class="fas fa-list" style="color: #ED5909;"></i>
+        <span>Транзакції</span>
+      </a>
+      <a href="/admin/analytics" class="block px-4 py-3 rounded-md transition duration-200 flex items-center space-x-2" style="background-color: #ED5909; color: #FFFFFF;">
+        <i class="fas fa-chart-bar" style="color: #FFFFFF;"></i>
+        <span>Аналітика</span>
+      </a>
+    </nav>
+  </aside>
+
+  <div class="flex-1 rounded-2xl shadow-xl p-8 animate__animated animate__fadeIn" style="background-color: #1A1A1A;">
+    <div class="flex items-center justify-center mb-8">
+      <i class="fas fa-chart-bar text-4xl mr-3" style="color: #ED5909;"></i>
+      <h1 class="text-3xl font-bold" style="color: #FFFFFF;">Аналітика продажів</h1>
+    </div>
+
+    <!-- Прихований елемент для передачі даних -->
+    <div id="chart-data"
+         th:attr="data-sales=${salesByFuelTypeJson},
+                 data-sales-daily=${salesByFuelTypeDailyJson},
+                 data-sales-weekly=${salesByFuelTypeWeeklyJson},
+                 data-sales-monthly=${salesByFuelTypeMonthlyJson},
+                 data-revenue-daily=${revenueByFuelTypeDailyJson},
+                 data-revenue-weekly=${revenueByFuelTypeWeeklyJson},
+                 data-revenue-monthly=${revenueByFuelTypeMonthlyJson},
+                 data-total-revenue-daily=${totalRevenueDailyJson},
+                 data-total-revenue-weekly=${totalRevenueWeeklyJson},
+                 data-total-revenue-monthly=${totalRevenueMonthlyJson}"
+         style="display: none;"></div>
+
+    <!-- Загальний заробіток за період -->
+    <div class="mb-12">
+      <h2 class="text-xl font-semibold mb-4" style="color: #D1D5DB;">Загальний заробіток (грн)</h2>
+      <div class="flex space-x-4 mb-6">
+        <button id="totalDailyBtn" class="period-btn px-4 py-2 rounded-md transition duration-200" style="background-color: #ED5909; color: #FFFFFF;">По днях</button>
+        <button id="totalWeeklyBtn" class="period-btn px-4 py-2 rounded-md transition duration-200" style="background-color: #ED5909; color: #FFFFFF;">По тижнях</button>
+        <button id="totalMonthlyBtn" class="period-btn px-4 py-2 rounded-md transition duration-200" style="background-color: #ED5909; color: #FFFFFF;">По місяцях</button>
+      </div>
+      <div class="chart-wrapper rounded-xl shadow-md" style="background-color: #262626; min-height: 400px;">
+        <div class="chart-container p-6">
+          <canvas id="totalRevenueChart" style="height: 400px; width: 100%;"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Обсяг продажів за типами пального -->
+    <div class="mb-12">
+      <h2 class="text-xl font-semibold mb-4" style="color: #D1D5DB;">Обсяг продажів за типами пального (л)</h2>
+      <div class="flex space-x-4 mb-6">
+        <button id="salesDailyBtn" class="period-btn px-4 py-2 rounded-md transition duration-200" style="background-color: #ED5909; color: #FFFFFF;">По днях</button>
+        <button id="salesWeeklyBtn" class="period-btn px-4 py-2 rounded-md transition duration-200" style="background-color: #ED5909; color: #FFFFFF;">По тижнях</button>
+        <button id="salesMonthlyBtn" class="period-btn px-4 py-2 rounded-md transition duration-200" style="background-color: #ED5909; color: #FFFFFF;">По місяцях</button>
+      </div>
+      <div class="chart-wrapper rounded-xl shadow-md" style="background-color: #262626; min-height: 400px;">
+        <div class="chart-container p-6">
+          <canvas id="salesChart" style="height: 400px; width: 100%;"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Сума заробітку за типами пального -->
+    <div class="mb-12">
+      <h2 class="text-xl font-semibold mb-4" style="color: #D1D5DB;">Сума заробітку за типами пального (грн)</h2>
+      <div class="flex space-x-4 mb-6">
+        <button id="dailyBtn" class="period-btn px-4 py-2 rounded-md transition duration-200" style="background-color: #ED5909; color: #FFFFFF;">По днях</button>
+        <button id="weeklyBtn" class="period-btn px-4 py-2 rounded-md transition duration-200" style="background-color: #ED5909; color: #FFFFFF;">По тижнях</button>
+        <button id="monthlyBtn" class="period-btn px-4 py-2 rounded-md transition duration-200" style="background-color: #ED5909; color: #FFFFFF;">По місяцях</button>
+      </div>
+      <div class="chart-wrapper rounded-xl shadow-md" style="background-color: #262626; min-height: 400px;">
+        <div class="chart-container p-6">
+          <canvas id="revenueChart" style="height: 400px; width: 100%;"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div th:insert="~{fragments :: footer}"></div>
+
+<script th:src="@{/js/chart.min.js}"></script>
+<script th:src="@{/js/admin-analytics.js}"></script>
+</body>
+</html>

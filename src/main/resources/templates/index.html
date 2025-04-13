@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Головна - TopTar Fuel Station</title>
+  <link rel="stylesheet" th:href="@{/css/tailwind.min.css}">
+  <link rel="stylesheet" th:href="@{/css/all.min.css}">
+  <link rel="stylesheet" th:href="@{/css/animate.min.css}">
+  <style>
+    input[type="password"]::-ms-reveal,
+    input[type="password"]::-ms-clear,
+    input[type="password"]::-webkit-textfield-decoration-container {
+      display: none;
+    }
+
+    .custom-select-wrapper {
+      position: relative;
+      width: 100%;
+    }
+
+    .custom-select {
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .custom-select-options {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      z-index: 10;
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      max-height: 200px;
+      overflow-y: auto;
+      animation: slideDown 0.3s ease;
+    }
+
+    .custom-select-options.show {
+      display: block;
+    }
+
+    .custom-select-option {
+      padding: 0.75rem 1rem;
+      transition: background 0.2s ease;
+      cursor: pointer;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    #selectedFuel.placeholder {
+      color: #9ca3af;
+    }
+
+    #selectedFuel:not(.placeholder) {
+      color: #FFFFFF;
+    }
+
+    input[type="number"] {
+      appearance: textfield;
+    }
+
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .relative {
+      width: 100%;
+    }
+
+    @media (max-width: 640px) {
+      .custom-select-wrapper,
+      .relative {
+        width: 100%;
+      }
+
+      .inline-flex {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .toggle-btn {
+        flex: 1;
+        text-align: center;
+      }
+
+      button[type="submit"] {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col" style="background-color: #141414;" th:data-is-authenticated="${isAuthenticated}">
+<div th:replace="~{fragments :: header}"></div>
+
+<main class="flex-grow max-w-7xl mx-auto px-4 py-12">
+  <div class="rounded-2xl shadow-xl p-8 max-w-lg mx-auto animate__animated animate__fadeIn" style="background-color: #1A1A1A;">
+    <div class="flex items-center justify-center mb-8">
+      <i class="fas fa-gas-pump text-4xl mr-3" style="color: #ED5909;"></i>
+      <h1 class="text-3xl font-bold text-white">Касова система АЗС</h1>
+    </div>
+
+    <div class="p-6 rounded-xl shadow-inner" style="background-color: #262626;">
+      <h2 class="text-xl font-semibold text-gray-300 mb-6 text-center">Нова транзакція</h2>
+      <form th:action="@{/pos/transaction}" th:object="${transaction}" method="post" class="space-y-6">
+        <div class="relative">
+          <label for="fuelTypeId" class="block text-sm font-medium text-gray-300 mb-2">Тип пального:</label>
+          <div class="custom-select-wrapper">
+            <div class="custom-select flex items-center justify-between w-full rounded-md px-4 py-3 shadow-sm" style="background-color: #1A1A1A; border: 1px solid #262626;">
+              <span id="selectedFuel" class="text-gray-400">Виберіть тип пального</span>
+              <i class="fas fa-chevron-down" style="color: #ED5909;"></i>
+            </div>
+            <div id="fuelOptions" class="custom-select-options">
+              <div th:each="fuel : ${fuelTypes}" class="custom-select-option" th:data-value="${fuel.id}" th:data-price="${fuel.pricePerLiter}" th:text="${fuel.name + ' (' + fuel.pricePerLiter + ' грн/л)'}" style="background-color: #1A1A1A; color: #FFFFFF;"></div>
+            </div>
+          </div>
+          <input type="hidden" id="fuelTypeId" th:field="*{fuelTypeId}" required>
+        </div>
+
+        <div class="flex justify-center mb-4">
+          <div class="inline-flex rounded-md shadow-sm" role="group">
+            <button type="button" class="toggle-btn active px-4 py-2 text-sm font-medium text-white rounded-l-md transition duration-200" style="background-color: #ED5909; border: 1px solid #ED5909;" data-type="volume">
+              Об’єм (л)
+            </button>
+            <button type="button" class="toggle-btn px-4 py-2 text-sm font-medium text-gray-300 rounded-r-md transition duration-200" style="background-color: #1A1A1A; border: 1px solid #262626;" data-type="amount">
+              Сума (грн)
+            </button>
+          </div>
+        </div>
+
+        <div class="relative">
+          <label for="inputValue" class="block text-sm font-medium text-gray-300 mb-2" id="inputLabel">Об’єм (літри):</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-4">
+              <i id="inputIcon" class="fas fa-tint" style="color: #ED5909;"></i>
+            </span>
+            <input type="number" id="inputValue" step="0.1" class="pl-12 w-full rounded-md px-4 py-3 shadow-sm transition duration-200 text-white" style="background-color: #1A1A1A; border: 1px solid #262626; outline: none;" placeholder="Введіть об’єм" required/>
+          </div>
+          <p id="inputError" class="text-red-600 text-sm mt-1 hidden"></p>
+        </div>
+
+        <input type="hidden" id="volume" th:field="*{volume}">
+        <input type="hidden" id="totalAmount" th:field="*{totalAmount}">
+
+        <div class="text-center p-4 rounded-md shadow-inner" style="background-color: #262626;">
+          <p class="text-sm font-medium text-gray-300">Загальна ціна:</p>
+          <div class="flex justify-center items-center space-x-2">
+            <p id="totalPrice" class="text-2xl font-bold animate__animated animate__pulse animate__faster" style="color: #ED5909;">0.00 грн</p>
+            <span th:if="${isAuthenticated}" class="text-sm text-green-600 font-medium">(з урахуванням знижки)</span>
+          </div>
+          <p id="calculatedVolume" class="text-sm text-gray-400 mt-1 hidden">Об’єм: 0.00 л</p>
+          <div th:unless="${isAuthenticated}" class="mt-2 text-center">
+            <p class="font-medium" style="color: #ED5909;">
+              <a href="/login" class="underline hover:text-orange-700">Увійдіть</a>, щоб отримати знижку 2 грн за літр!
+            </p>
+          </div>
+        </div>
+
+        <button type="submit" id="submitBtn" class="w-full text-white py-3 rounded-md transition duration-300 flex items-center justify-center space-x-2 shadow-md" style="background-color: #ED5909;" disabled>
+          <i class="fas fa-check"></i>
+          <span>Завершити транзакцію</span>
+        </button>
+      </form>
+
+      <p class="text-green-600 mt-4 text-center font-medium animate__animated animate__fadeIn" th:if="${message}" th:text="${message}"></p>
+      <p class="text-red-600 mt-4 text-center font-medium animate__animated animate__fadeIn" th:if="${error}" th:text="${error}"></p>
+    </div>
+  </div>
+</main>
+
+<div th:insert="~{fragments :: footer}"></div>
+
+<script th:src="@{/js/index.js}"></script>
+</body>
+</html>
